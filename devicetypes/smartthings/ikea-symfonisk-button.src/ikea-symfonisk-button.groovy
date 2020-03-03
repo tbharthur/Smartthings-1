@@ -80,13 +80,19 @@ def parse(String description) {
     
     try {
         def event = zigbee.getEvent(description)
-
 	    log.debug "event is $event"
+
     } catch(Exception ex) {
         log.debug "Unable to parse.  Exception: ${ex}"
     }
     
-    def descMap = zigbee.parseDescriptionAsMap(description)
+    try{
+        def descMap = zigbee.parseDescriptionAsMap(description)
+        log.debug "event is $descMap"    
+    } catch(Exception ex2) {
+        log.debug "Unable to parse.  Exception: ${ex}.  Description: $description"
+    }
+
     if (descMap.clusterInt == zigbee.POWER_CONFIGURATION_CLUSTER && descMap.attrInt == BATTERY_VOLTAGE_ATTR) {
         sendEvent(name: "battery", value: zigbee.convertHexToInt(descMap.value))
     } else if (descMap && descMap.clusterInt == 0x0006) {

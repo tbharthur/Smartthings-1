@@ -15,7 +15,7 @@
  *
  */
 import groovy.json.JsonOutput
-import com.hubitat.zigbee.DataType
+import physicalgraph.zigbee.zcl.DataType
 
 metadata {
     definition(name: "Ikea Symfonisk Button", namespace: "smartthings", author: "Luis Pinto", ocfDeviceType: "x.com.st.d.remotecontroller", mnmn: "SmartThings") {

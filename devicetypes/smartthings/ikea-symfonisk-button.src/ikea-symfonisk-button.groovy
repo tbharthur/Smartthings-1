@@ -78,9 +78,13 @@ private sendButtonEvent(buttonNumber, buttonState) {
 def parse(String description) {
 	log.debug "description is $description"
     
-    def event = zigbee.getEvent(description)
+    try {
+        def event = zigbee.getEvent(description)
 
-	log.debug "event is $event"
+	    log.debug "event is $event"
+    } catch(Exception ex) {
+        log.debug "Unable to parse.  Exception: ${ex}"
+    }
     
     def descMap = zigbee.parseDescriptionAsMap(description)
     if (descMap.clusterInt == zigbee.POWER_CONFIGURATION_CLUSTER && descMap.attrInt == BATTERY_VOLTAGE_ATTR) {

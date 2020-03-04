@@ -82,16 +82,33 @@ def parse(String description) {
         def event = zigbee.getEvent(description)
 	    log.debug "event is $event"
 
-    } catch(Exception ex) {
+    } 
+    
+    catch(Exception ex) {
         log.debug "Unable to parse.  Exception: ${ex}"
     }
     
     try{
         def descMap = zigbee.parseDescriptionAsMap(description)
         log.debug "event is $descMap"    
-    } catch(Exception ex2) {
+    } 
+    
+    catch(Exception ex2) {
         log.debug "Unable to parse.  Exception: ${ex}.  Description: $description"
-    }
+
+     if (description?.contains("0C300")) {
+           log.debug "dimmer started, turning up"
+           def descMap = [clusterInt: 0x0008, attrInt: 1, commandInt: 0x01]
+           state.direction = "0"
+       }
+       else if (description?.contains("1C300")) {
+            log.debug "dimmer started, turning down"  
+            def descMap = [clusterInt: 0x0008, attrInt: 1, commandInt: 0x01]
+           state.direction = "1"
+    	}   
+    } 
+    
+    finally {
 
     if (descMap.clusterInt == zigbee.POWER_CONFIGURATION_CLUSTER && descMap.attrInt == BATTERY_VOLTAGE_ATTR) {
         sendEvent(name: "battery", value: zigbee.convertHexToInt(descMap.value))
@@ -113,7 +130,7 @@ def parse(String description) {
   		        sendButtonEvent(3, "pushed")
             }
 		} else if (descMap.commandInt == 0x01) {
-            state.direction = descMap.data[0][1]
+            //state.direction = descMap.data[0][1]
             state.moveStart = now()
             log.debug "dimmer start moving"
 
@@ -164,6 +181,7 @@ def parse(String description) {
     } else {
         log.warn "DID NOT PARSE MESSAGE for description : $description"
         log.debug "${descMap}"
+    }
     }
 	
 }
